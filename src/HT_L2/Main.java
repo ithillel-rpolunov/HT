@@ -12,42 +12,36 @@ public class Main {
         File file = new File("C:\\Hillel_QAA");
         String filePath = file.getPath() + file.separator;
 
+        Menu.menu(filePath);
         while (!number.equals("exit")) {
 
 //            System.out.println("You are at [" + file.getCanonicalPath().substring(0, file.getCanonicalPath().lastIndexOf(File.separator)+1) + "] directory");
-            System.out.println("You are at [" + filePath + "] directory");
-            System.out.println("------======------\n1. create file \n2. delete file\n3. rename file\n0. Exit\n------======------\n");
 
             number = bufferedReader.readLine();
             int inumb = Integer.parseInt(number);
 
             if(inumb == 1){
-                FileCreator fileCreator = new FileCreator();
-                fileCreator.fileCreator(file, filePath);
+                FileActions fileActions = new FileActions();
+                fileActions.fileCreator(file, filePath);
             }
             if(inumb == 2){
-                System.out.println("Input file name");
-
-                String deleteFile = bufferedReader.readLine();
-                file = new File(filePath + file.separator + deleteFile);
-
-                file.delete();
-                System.out.println("\nFile " + file + " was deleted\n");
+                FileActions fileActions = new FileActions();
+                fileActions.fileDeleter(file, filePath);
             }
             if(inumb == 3){
-                System.out.println("Input file name to rename");
-
-                String renameFile = bufferedReader.readLine();
-                System.out.println("Input new file name");
-
-                String newrenameFile = bufferedReader.readLine();
-                File oldFile = new File(filePath + file.separator + renameFile);
-                File newFile1 = new File(filePath + file.separator + newrenameFile);
-
-                oldFile.renameTo(newFile1);
-
-                System.out.println("File " + oldFile + " was renamed to " + newFile1 + "\n");
+                FileActions fileActions = new FileActions();
+                fileActions.fileRenamer(file, filePath);
             }
+            if(inumb == 4) {
+                FileActions fileActions = new FileActions();
+                fileActions.getListing(file);
+            }
+            if(inumb == 5) {
+                FileActions fileActions = new FileActions();
+                file = fileActions.changeDir(file);
+                filePath = file.getPath() + file.separator;
+            }
+
             if (inumb == 0){
                 break;
             }
