@@ -1,10 +1,12 @@
 package HT_L2;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
+import com.sun.org.apache.xerces.internal.impl.xs.identity.Selector;
+import com.sun.org.apache.xpath.internal.SourceTree;
+
+import java.io.*;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class FileActions {
@@ -39,7 +41,7 @@ public class FileActions {
             Menu.menu(filePath);
         }
         if (chouse == 0) {
-           Menu.menu(filePath);
+            Menu.menu(filePath);
         }
     }
 
@@ -71,10 +73,11 @@ public class FileActions {
         System.out.println("File " + oldFile + " was renamed to " + newFile1 + "\n");
     }
 
-    public void getListing(File file){
+    public  Map<String, ArrayList<String>> getListing(File file){
         ArrayList<String> filesList = new ArrayList<>();
         ArrayList<String> dirList = new ArrayList<>();
         File[] listArray = file.listFiles();
+        Map<String, ArrayList<String>> arrayListMap = new HashMap<>();
 
         file.listFiles();
 
@@ -86,18 +89,47 @@ public class FileActions {
                 filesList.add(file1.toString().substring(file1.toString().lastIndexOf(File.separator) + 1));
             }
         }
-        System.out.println("-----===== FOLDERS ====-----");
-        for (String s : dirList) {
-            System.out.println("[" + s + "]");
-        }
-        System.out.println("-----===== FILES ====-----");
-        for (String s : filesList) {
-            System.out.println(s);
-        }
 
+        arrayListMap.put("folders",dirList);
+        arrayListMap.put("files",filesList);
+        return arrayListMap;
+    }
+
+    public void contentPrinter(String fileORFolder,  Map<String, ArrayList<String>> arrayListMap){
+        ArrayList<String> stringArrayList;
+
+        switch (fileORFolder){
+            case "folders":
+                stringArrayList = arrayListMap.get("folders");
+                System.out.println("-----===== FOLDERS ====-----");
+                for (String s : stringArrayList) {
+                    System.out.println(s);
+                }
+                break;
+            case "files":
+                stringArrayList = arrayListMap.get("files");
+                System.out.println("-----===== FILES ====-----");
+                for (String s : stringArrayList) {
+                    System.out.println(s);
+                }
+                break;
+            case "all":
+                stringArrayList = arrayListMap.get("folders");
+                System.out.println("-----===== FOLDERS ====-----");
+                for (String s : stringArrayList) {
+                    System.out.println(s);
+                }
+                stringArrayList = arrayListMap.get("files");
+                System.out.println("-----===== FILES ====-----");
+                for (String s : stringArrayList) {
+                    System.out.println(s);
+                }
+                break;
+        }
     }
 
     public File changeDir(File file) throws IOException {
+        contentPrinter("folders", getListing(file));
         System.out.println("type new path");
         String newPath = bufferedReader.readLine();
 
@@ -105,11 +137,79 @@ public class FileActions {
         if (newPath.equals("..")){
             file_new  = new File(file.toString().substring(0, file.toString().lastIndexOf(File.separator) + 1));
         } else {
-             file_new  = new File(file.toString() + file.separator + newPath);
+            file_new  = new File(file.toString() + file.separator + newPath);
         }
         String filePath = file_new.getPath() + file.separator;
         Menu.menu(filePath);
         return file_new;
     }
+
+    public void findWordOccurrenceInFile(File file) throws IOException {
+
+//        System.out.println(file);
+        contentPrinter("files", getListing(file));
+
+        BufferedReader stringBufferedReader = new BufferedReader(new InputStreamReader(System.in));
+
+        System.out.println("\nInput name of file");
+        String fileToSearchIn = stringBufferedReader.readLine();
+        File file1 = new File(file.getPath() + file.separator + fileToSearchIn);
+
+        System.out.println("\nInput word");
+        String wordToSearch = stringBufferedReader.readLine();
+
+        String line;
+        int counter = 0;
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(file1));
+        while ((line = bufferedReader.readLine()) != null){
+            List<String> strings =  Arrays.asList(line.split(" "));
+            for (String string : strings) {
+                if (string.contentEquals(wordToSearch)){
+                    counter++;
+                }
+            }
+        }
+        System.out.println("Was founded " + counter + " " + wordToSearch);
+        return;
+    }
+
+    public void replaceWordInFile(File file) throws IOException {
+        contentPrinter("files", getListing(file));
+
+        BufferedReader stringBufferedReader = new BufferedReader(new InputStreamReader(System.in));
+
+        System.out.println("\nInput name of file");
+        String fileToSearchIn = stringBufferedReader.readLine();
+        File file1 = new File(file.getPath() + file.separator + fileToSearchIn);
+
+        System.out.println("\nInput word");
+        String wordToReplace = stringBufferedReader.readLine();
+
+        System.out.println("\nInput new word");
+        String newWord = stringBufferedReader.readLine();
+
+        String line, lineWithReplase;
+        String newline = "";
+//        lineWithReplase = "";
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(file1));
+        while ((line = bufferedReader.readLine()) != null){
+            newline = newline + line + "\n";
+        }
+        bufferedReader.close();
+
+        lineWithReplase = newline.replaceAll(wordToReplace, newWord);
+        System.out.println(lineWithReplase);
+        FileWriter fileWriter = new FileWriter(file1);
+        fileWriter.write(lineWithReplase);
+        fileWriter.flush();
+        fileWriter.close();
+        return;
+
+    }
+
+    public void showLineNumbersWhereWordWasFound(){
+
+    };
+
 
 }

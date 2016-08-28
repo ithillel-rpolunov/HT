@@ -11,7 +11,7 @@ public class Main {
 
         File file = new File("C:\\Hillel_QAA");
         String filePath = file.getPath() + file.separator;
-
+        FileActions fileActions = new FileActions();
         Menu.menu(filePath);
         while (!number.equals("exit")) {
 
@@ -20,31 +20,33 @@ public class Main {
             number = bufferedReader.readLine();
             int inumb = Integer.parseInt(number);
 
-            if(inumb == 1){
-                FileActions fileActions = new FileActions();
-                fileActions.fileCreator(file, filePath);
-            }
-            if(inumb == 2){
-                FileActions fileActions = new FileActions();
-                fileActions.fileDeleter(file, filePath);
-            }
-            if(inumb == 3){
-                FileActions fileActions = new FileActions();
-                fileActions.fileRenamer(file, filePath);
-            }
-            if(inumb == 4) {
-                FileActions fileActions = new FileActions();
-                fileActions.getListing(file);
-            }
-            if(inumb == 5) {
-                FileActions fileActions = new FileActions();
-                file = fileActions.changeDir(file);
-                filePath = file.getPath() + file.separator;
+            switch (inumb){
+                case 1:
+                    fileActions.fileCreator(file, filePath);
+                    break;
+                case 2:
+                    fileActions.fileDeleter(file, filePath);
+                    break;
+                case 3:
+                    fileActions.fileRenamer(file, filePath);
+                    break;
+                case 4:
+                    fileActions.contentPrinter("all", fileActions.getListing(file));
+                    break;
+                case 5:
+                    file = fileActions.changeDir(file);
+                    filePath = file.getPath() + file.separator;
+                    break;
+                case 6:
+                    fileActions.findWordOccurrenceInFile(file);
+                    break;
+                case 7:
+                    fileActions.replaceWordInFile(file);
+                    break;
+                case 0:
+                    return;
             }
 
-            if (inumb == 0){
-                break;
-            }
 
 
             //текущее расположение!!!!
